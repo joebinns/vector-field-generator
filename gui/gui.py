@@ -6,6 +6,7 @@ from callback import callback
 from tooltip import CreateTooltip
 from vector3input import CreateVector3Input
 from vector3 import Vector3
+from floatinput import CreateFloatInput
 
 """ Version """
 # Define version number
@@ -21,7 +22,7 @@ root = tk.Tk()
 root.title("Vector Field Generator (" + version + ")")
 root.configure(background = theme.background)
 root.minsize(400, 500)
-root.geometry("500x600+50+50")  # width x height + x + y
+root.geometry("500x500+50+50")  # width x height + x + y
 root.iconbitmap("./gui/icon.ico")
 
 """ Credits """
@@ -32,7 +33,7 @@ credits_label.bind("<Button-1>", lambda e:
     callback("http://joebinns.com"))
 
 """ Row Layout """
-initial_row_y = 18
+initial_row_y = 16
 row_height = 32
 row_index = 0
 
@@ -40,11 +41,6 @@ def getrowy(index):
     return initial_row_y + index * row_height
 
 """ Generation Mode """
-'''
-def getGenType(string01):
-    return{"Uniform":0,"UniformNormalized":1,"Grid":2,"GridNormalized":3,"Radial":4}[string01]
-'''
-
 # Create generation mode dropdown widget
 row_index += 1
 generation_mode_options = ["Signed Distance Field"]
@@ -57,27 +53,63 @@ generation_mode_selection.place(x = 190, y = getrowy(row_index), height = 24, wi
 
 """ Grid Dimensions """
 row_index += 1
-grid_dimension_input = CreateVector3Input(root, theme, "Grid Dimensions:", getrowy(row_index), "Use values no lower than 2. High values take longer to generate, and cost more memory.", Vector3(16, 16, 16))
+grid_dimensions_input = CreateVector3Input(root, theme, "Grid Dimensions:", getrowy(row_index), "Use values no lower than 2. High values take longer to generate, and cost more memory.", Vector3(16, 16, 16))
 
 """ Extents """
 # Lower bound
 row_index += 1
-lower_extent_input = CreateVector3Input(root, theme, "Lower Grid Extents:", getrowy(row_index), "The minimum coordinate, for which the bottom left back corner of the grid will assume.", Vector3(-100., -100., -100.))
+lower_extent_input = CreateVector3Input(root, theme, "Lower Grid Extent:", getrowy(row_index), "The minimum coordinate, for which the bottom left back corner of the grid will assume.", Vector3(-100., -100., -100.))
 
 # Upper bound
 row_index += 1
-upper_extent_input = CreateVector3Input(root, theme, "Upper Grid Extents:", getrowy(row_index), "The maximum coordinate, for which the upper right front corner of the grid will assume.", Vector3(100., 100., 100.))
+upper_extent_input = CreateVector3Input(root, theme, "Upper Grid Extent:", getrowy(row_index), "The maximum coordinate, for which the upper right front corner of the grid will assume.", Vector3(100., 100., 100.))
 
 """ Signed Distance Field """
 # Create signed distance field dropdown widget
 row_index += 1
-sdf_options = ["Sphere", "Cube"]
+sdf_options = ["Circle", "Box"]
 sdf_label = tk.Label(root, text = "Signed Distance Field:", foreground = theme.foreground, background = theme.background, font = theme.font)
 sdf_label.place(x = 20, y = getrowy(row_index), height = 24)
-sdf_tooltip = CreateTooltip(sdf_label, "Choose the signed distance field used.")
+sdf_tooltip = CreateTooltip(sdf_label, "Choose the signed distance field to use.")
 sdf_selection = ttk.Combobox(root, values = sdf_options, takefocus = True, state = "readonly", font = theme.font)
 sdf_selection.set(sdf_options[0])
 sdf_selection.place(x = 190, y = getrowy(row_index), height = 24, width = 285)
+
+# Temporary rows
+row_index = row_index
+row_index += 1 
+
+# Circle
+radius_input = CreateFloatInput(root, theme, "Radius:", getrowy(row_index), "", 10)
+
+# Box
+extents_input = CreateVector3Input(root, theme, "Scale:", getrowy(row_index), "", Vector3(10, 10, 10))
+
+def hideallsdfdependentwidgets():
+    # Sphere
+    # Radius
+    radius_input.hide()
+
+    # Cube
+    # Extents
+    extents_input.hide()
+
+def updatesdfwidgets():
+    hideallsdfdependentwidgets()
+
+    if (sdf_selection.get() == "Circle"):
+        # Radius
+        radius_input.show()
+
+    elif (sdf_selection.get() == "Box"):
+        # Radius
+        extents_input.show()
+
+def sdfselectionchanged(event):
+    updatesdfwidgets()
+
+updatesdfwidgets()
+sdf_selection.bind('<<ComboboxSelected>>', sdfselectionchanged)
 
 """ Save To """
 def saveto():
@@ -89,14 +121,15 @@ def saveto():
     file_entry.insert(2, save_dir.name)
 
 # Create File Dialog
-row_index += 1
+row_index_end = row_index
+row_index_end += 4
 file_label = tk.Label(root, text = "Save To:", foreground = theme.foreground, background = theme.background, font = theme.font)
-file_label.place(x = 20, y = getrowy(row_index), height = 24)
+file_label.place(x = 20, y = getrowy(row_index_end), height = 24)
 file_tooltip = CreateTooltip(file_label, "Path to save the generated .fga file.", theme)
 file_entry = tk.Entry(root, foreground = theme.foreground, background = theme.background, font = theme.font)
-file_entry.place(x = 190, y = getrowy(row_index), height = 24, width = 285)
+file_entry.place(x = 190, y = getrowy(row_index_end), height = 24, width = 285)
 file_button = tk.Button(root, text = "...", foreground = theme.foreground, background = theme.background, font = theme.font, command = saveto)
-file_button.place(x = 450, y = getrowy(row_index), height = 24)
+file_button.place(x = 450, y = getrowy(row_index_end), height = 24)
 
 """ Generate """
 
@@ -134,9 +167,9 @@ def writefile():
     #print(mainscalefactor)
     '''
 
-row_index += 1.60
+row_index_end += 1.60
 create_button = tk.Button(root, text = "Generate Vector Field", background = theme.background, foreground = theme.foreground, font = theme.font, command = writefile)
-create_button.place(x = 20, y = getrowy(row_index), height = 24, width = 200)
+create_button.place(x = 20, y = getrowy(row_index_end), height = 24, width = 200)
 create_tooltip = CreateTooltip(create_button, "Generates the file and opens for preview in a text editor.", theme)
 
 """ Render """
