@@ -23,7 +23,7 @@ root.title("Vector Field Generator (" + version + ")")
 root.configure(background = theme.background)
 root.minsize(400, 500)
 root.geometry("500x500+50+50")  # width x height + x + y
-root.iconbitmap("./gui/icon.ico")
+root.iconbitmap("./icon.ico")
 
 """ Credits """
 # Create a Label to display the credits
