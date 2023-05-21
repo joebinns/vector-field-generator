@@ -29,3 +29,6 @@ class Vector3:
         z = self.z - other.z
         return Vector3(x, y, z)
     
+    def __repr__(self) -> str:
+        return str(self.x) + " " + str(self.y) + " " + str(self.z)
+    

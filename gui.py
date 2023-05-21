@@ -80,10 +80,10 @@ row_index = row_index
 row_index += 1 
 
 # Circle
-radius_input = CreateFloatInput(root, theme, "Radius:", getrowy(row_index), "", 10)
+radius_input = CreateFloatInput(root, theme, "Radius:", getrowy(row_index), "", 10.)
 
 # Box
-extents_input = CreateVector3Input(root, theme, "Scale:", getrowy(row_index), "", Vector3(10, 10, 10))
+extents_input = CreateVector3Input(root, theme, "Scale:", getrowy(row_index), "", Vector3(10., 10., 10.))
 
 def hideallsdfdependentwidgets():
     # Sphere
@@ -127,13 +127,15 @@ file_label = tk.Label(root, text = "Save To:", foreground = theme.foreground, ba
 file_label.place(x = 20, y = getrowy(row_index_end), height = 24)
 file_tooltip = CreateTooltip(file_label, "Path to save the generated .fga file.", theme)
 file_entry = tk.Entry(root, foreground = theme.foreground, background = theme.background, font = theme.font)
-file_entry.place(x = 190, y = getrowy(row_index_end), height = 24, width = 285)
+file_entry.place(x = 190, y = getrowy(row_index_end), height = 24, width = 260)
 file_button = tk.Button(root, text = "...", foreground = theme.foreground, background = theme.background, font = theme.font, command = saveto)
 file_button.place(x = 450, y = getrowy(row_index_end), height = 24)
 
 """ Generate """
 
 def writefile():
+    
+
     '''
     gridsize = [int(ceil(float(grids_x.get()))),int(ceil(float(grids_y.get()))),int(ceil(float(grids_z.get())))]
     generator = getGenType(GenType_dpd.get())
