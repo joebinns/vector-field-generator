@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 from theme import Theme
 from tooltip import CreateTooltip
 
@@ -45,4 +46,12 @@ class CreateFloatInput(object):
     def hide(self):
         self.label.place(x = 0, y = 0, height = 0)
         self.entry.place(x = 0, y = 0, height = 0)
+
+    def getentry(self):
+        entry = None
+        try:
+            entry = float(self.entry.get())
+        except:
+            messagebox.showerror("Invalid Input", "Ensure inputs are valid")
+        return entry
     

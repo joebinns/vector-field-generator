@@ -1,5 +1,7 @@
 import tkinter as tk
+import os
 from tkinter import ttk
+from tkinter import messagebox
 from tkinter.filedialog import asksaveasfile
 from theme import Theme
 from callback import callback
@@ -7,6 +9,8 @@ from tooltip import CreateTooltip
 from vector3input import CreateVector3Input
 from vector3 import Vector3
 from floatinput import CreateFloatInput
+from signeddistancefunctions import SDF, Circle, Box, Torus
+from vectorfieldgenerator import generatevectorfield
 
 """ Version """
 # Define version number
@@ -134,40 +138,30 @@ file_button.place(x = 450, y = getrowy(row_index_end), height = 24)
 """ Generate """
 
 def writefile():
-    
-
-    '''
-    gridsize = [int(ceil(float(grids_x.get()))),int(ceil(float(grids_y.get()))),int(ceil(float(grids_z.get())))]
-    generator = getGenType(GenType_dpd.get())
-    minbounds = [int(MinB_x.get()),int(MinB_y.get()),int(MinB_z.get())]
-    maxbounds = [int(MaxB_x.get()),int(MaxB_y.get()),int(MaxB_z.get())]
-    directionbias = [float(DirB_x.get()),float(DirB_y.get()),float(DirB_z.get())]
-    directionstrength = float(DirStr.get())
-    scalenoiseamount = float(SclNAmt.get())
-    directionnoiseamount = float(DirNAmt.get())
-    mainscalefactor = float(Scl_F.get())
-    filename = File_Entry.get()
-
-    filecheck = os.path.isfile(filename)
+    filename = file_entry.get()
     pathcheck = os.path.split(filename)
     pathbool = os.path.isdir(pathcheck[0])
 
     if(pathbool):
-        core.makeVectorField(gridsize, minbounds, maxbounds, generator, filename, directionbias, directionstrength,scalenoiseamount, directionnoiseamount, mainscalefactor)
-    else:
-        showerror("Save Location", "Invalid save location")
+        # Gather all the variables
+        grid_dimensions = grid_dimensions_input.getentry()
+        grid_dimensions = (round(grid_dimensions.x), round(grid_dimensions.y), round(grid_dimensions.z))
+        lower_extent = lower_extent_input.getentry()
+        upper_extent = upper_extent_input.getentry()
+        sdf_choice = sdf_selection.get()
 
-    #print(gridsize)
-    #print(generator)
-    #print(File_Entry.get())
-    #print(minbounds)
-    #print(maxbounds)
-    #print(directionbias)
-    #print(directionstrength)
-    #print(scalenoiseamount)
-    #print(directionnoiseamount)
-    #print(mainscalefactor)
-    '''
+        sdf = SDF()
+        if (sdf_choice == "Circle"):
+            radius = radius_input.getentry()
+            sdf = Circle(radius)
+        elif (sdf_choice == "Box"):
+            extents = extents_input.getentry()
+            sdf = Box(extents)
+
+        generatevectorfield(sdf, grid_dimensions, lower_extent, upper_extent, filename)
+        
+    else:
+        messagebox.showerror("Invalid Save Location", "Ensure save location is valid")
 
 row_index_end += 1.60
 create_button = tk.Button(root, text = "Generate Vector Field", background = theme.background, foreground = theme.foreground, font = theme.font, command = writefile)

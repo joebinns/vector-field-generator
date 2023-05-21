@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 from theme import Theme
 from tooltip import CreateTooltip
 from vector3 import Vector3
@@ -68,3 +69,10 @@ class CreateVector3Input(object):
         self.entry_y.place(x = 0, y = 0, height = 0)
         self.entry_z.place(x = 0, y = 0, height = 0)
     
+    def getentry(self):
+        entry = None
+        try:
+            entry = Vector3(float(self.entry_x.get()), float(self.entry_y.get()), float(self.entry_z.get()))
+        except:
+            messagebox.showerror("Invalid Input", "Ensure inputs are valid")
+        return entry
